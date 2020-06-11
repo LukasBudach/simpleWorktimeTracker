@@ -1,5 +1,4 @@
-from datastructures.Dates import Month
-from datastructures.Time import Time
+from datastructures import *
 from TrackedMonth import TrackedMonth
 
 import glob

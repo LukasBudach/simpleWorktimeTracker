@@ -1,4 +1,4 @@
-from datastructures.Dates import Month
+from datastructures import Month
 
 import unittest
 

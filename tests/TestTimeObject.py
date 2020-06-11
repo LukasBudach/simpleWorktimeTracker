@@ -1,4 +1,4 @@
-from datastructures.Time import Time
+from datastructures import Time
 
 import unittest
 

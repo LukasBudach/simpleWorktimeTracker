@@ -26,10 +26,10 @@ class TrackedMonth:
         return cls(raw_data, month_tracked)
 
     @classmethod
-    def from_date(cls, date: datetime.date):
-        filepath = Path('data/{}_{}_{}.csv'.format(date.year,
-                                                   date.strftime('%m'),
-                                                   date.strftime('%B')))
+    def from_date(cls, date: datetime.date, target_dir: Path = Path('./data')):
+        filepath = target_dir / '{}_{}_{}.csv'.format(date.year,
+                                                      date.strftime('%m'),
+                                                      date.strftime('%B'))
         if not filepath.exists():
             return cls(data=pd.DataFrame(columns=['date', 'start', 'end', 'work time', 'running total', 'description']),
                        month=date)
@@ -48,10 +48,10 @@ class TrackedMonth:
         self.sort()
         self.recalculate_running_total()
 
-    def save(self):
-        filepath = Path('data/{}_{}_{}.csv'.format(self._month.year,
-                                                   self._month.strftime('%m'),
-                                                   self._month.strftime('%B')))
+    def save(self, target_dir: Path = Path('./data')):
+        filepath = target_dir / '{}_{}_{}.csv'.format(self._month.year,
+                                                      self._month.strftime('%m'),
+                                                      self._month.strftime('%B'))
         filepath.parent.mkdir(parents=True, exist_ok=True)
 
         self.sort()

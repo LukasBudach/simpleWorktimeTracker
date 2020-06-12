@@ -138,7 +138,7 @@ class TestSummary(unittest.TestCase):
         summary_update_copy = copy.deepcopy(self._ref_summary)
         with patch('builtins.input', return_value='7'):
             # update from testdata months directory
-            summary_update_copy.update(data_dir='./testdata/months/')
+            summary_update_copy.update(data_dir=Path('./testdata/months'))
         ref_summary_updated = copy.deepcopy(self._ref_summary)
         inserted_month = TrackedMonth.from_file(Path('./testdata/months/2020_05_May.csv'))
         with patch('builtins.input', return_value='7'):

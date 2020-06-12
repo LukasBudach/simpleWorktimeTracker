@@ -4,6 +4,7 @@ from TrackedMonth import TrackedMonth
 import argparse
 
 from datetime import date
+from pathlib import Path
 
 
 class WorktimeTracker:
@@ -22,10 +23,11 @@ class WorktimeTracker:
         else:
             return date.today()
 
-    def __init__(self, multiple_dates=False):
+    def __init__(self, multiple_dates=False, data_dir=Path('data')):
         self._tracked_month = None
         self._current_date = None
         self._multiple_dates = multiple_dates
+        self._data_dir = data_dir
 
     def add_entries(self):
         while True:
@@ -56,7 +58,7 @@ class WorktimeTracker:
 
     def get_tracked_month(self):
         if self._tracked_month is None:
-            self._tracked_month = TrackedMonth.from_date(self._current_date)
+            self._tracked_month = TrackedMonth.from_date(self._current_date, target_dir=self._data_dir)
 
     def add_entry_for_date(self):
         start_in = input('Start time (hh:mm): ')
@@ -67,8 +69,8 @@ class WorktimeTracker:
 
     def close(self):
         self._tracked_month.save()
-        summ = Summary.from_file('data/Summary.csv')
-        summ.update()
+        summ = Summary.from_file(self._data_dir / 'Summary.csv')
+        summ.update(data_dir=self._data_dir)
         summ.save()
 
 

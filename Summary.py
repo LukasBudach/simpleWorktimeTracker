@@ -4,11 +4,12 @@ from TrackedMonth import TrackedMonth
 import glob
 import numpy as np
 import pandas as pd
+from pathlib import Path
 
 
 class Summary:
     @classmethod
-    def from_file(cls, filepath):
+    def from_file(cls, filepath: Path):
         raw_data = pd.read_csv(filepath, sep=',', header=0)
 
         # ensure the given file has the expected columns
@@ -29,7 +30,7 @@ class Summary:
                            'hours per week']
         assert np.array_equal(expected_header, data.columns)
 
-    def __init__(self, data, summary_file):
+    def __init__(self, data, summary_file: Path):
         self._data = data
         self._file_path = summary_file
         self.sort()
@@ -47,11 +48,11 @@ class Summary:
             total_overtime = total_overtime + el[1]['overtime done']
             self._data['total overtime'][el[0]] = total_overtime
 
-    def update(self, data_dir='data/', file_pattern='*_*_*.csv'):
-        month_files = glob.glob(data_dir + file_pattern)
+    def update(self, data_dir=Path('./data'), file_pattern='*_*_*.csv'):
+        month_files = glob.glob(str(data_dir / file_pattern))
         performed_an_update = False
         for filepath in month_files:
-            month_data = TrackedMonth.from_file(filepath)
+            month_data = TrackedMonth.from_file(Path(filepath))
             month_updated = self.update_insert_month(month_data)
             performed_an_update = performed_an_update or month_updated
         if performed_an_update:

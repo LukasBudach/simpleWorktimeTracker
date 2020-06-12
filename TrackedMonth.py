@@ -9,7 +9,7 @@ from pathlib import Path
 
 class TrackedMonth:
     @classmethod
-    def from_file(cls, filepath):
+    def from_file(cls, filepath: Path):
         raw_data = pd.read_csv(filepath, sep=',', header=0)
 
         # ensure the given file has the expected columns
@@ -26,7 +26,7 @@ class TrackedMonth:
         return cls(raw_data, month_tracked)
 
     @classmethod
-    def from_date(cls, date: datetime.date, target_dir: Path = Path('./data')):
+    def from_date(cls, date: datetime.date, target_dir=Path('./data')):
         filepath = target_dir / '{}_{}_{}.csv'.format(date.year,
                                                       date.strftime('%m'),
                                                       date.strftime('%B'))

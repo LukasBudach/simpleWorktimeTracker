@@ -12,9 +12,7 @@ class Summary:
         raw_data = pd.read_csv(filepath, sep=',', header=0)
 
         # ensure the given file has the expected columns
-        expected_header = ['month', 'time done', 'running total', 'time required', 'overtime done', 'total overtime',
-                           'hours per week']
-        assert np.array_equal(expected_header, raw_data.columns)
+        Summary.validate_header(raw_data)
 
         raw_data['month'] = raw_data['month'].apply(Month.from_summary_string)
         raw_data['time done'] = raw_data['time done'].apply(Time.from_string)
@@ -24,6 +22,12 @@ class Summary:
         raw_data['total overtime'] = raw_data['total overtime'].apply(Time.from_string)
 
         return cls(raw_data, filepath)
+
+    @staticmethod
+    def validate_header(data: pd.DataFrame):
+        expected_header = ['month', 'time done', 'running total', 'time required', 'overtime done', 'total overtime',
+                           'hours per week']
+        assert np.array_equal(expected_header, data.columns)
 
     def __init__(self, data, summary_file):
         self._data = data
@@ -43,15 +47,16 @@ class Summary:
             total_overtime = total_overtime + el[1]['overtime done']
             self._data['total overtime'][el[0]] = total_overtime
 
-    def update(self):
-        month_files = glob.glob('data/*_*_*.csv')
+    def update(self, data_dir='data/', file_pattern='*_*_*.csv'):
+        month_files = glob.glob(data_dir + file_pattern)
         performed_an_update = False
         for filepath in month_files:
             month_data = TrackedMonth.from_file(filepath)
             month_updated = self.update_insert_month(month_data)
             performed_an_update = performed_an_update or month_updated
-        self.sort()
-        self.recalculate_totals()
+        if performed_an_update:
+            self.sort()
+            self.recalculate_totals()
 
     def update_insert_month(self, month_data: TrackedMonth):
         month_updated = month_data.month()

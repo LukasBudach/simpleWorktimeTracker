@@ -59,34 +59,34 @@ class TestTrackedMonth(unittest.TestCase):
             TrackedMonth.validate_header(invalid_data)
 
     def test_from_file(self):
-        read_tracked_month = TrackedMonth.from_file(Path('./testdata/valid_reference_month.csv'))
+        read_tracked_month = TrackedMonth.from_file(Path('./tests/testdata/valid_reference_month.csv'))
         self._tracked_months_equal(self._ref_tracked_month, read_tracked_month)
 
     def test_from_date(self):
-        date_tracked_month = TrackedMonth.from_date(self._ref_month, Path('./testdata/tmp'))
+        date_tracked_month = TrackedMonth.from_date(self._ref_month, Path('./tests/testdata/tmp'))
         self._tracked_months_equal(self._ref_empty_tracked_month, date_tracked_month)
         # add a line and save for the test_from_date_existing test
         date_tracked_month.add_entry(date(2020, 5, 2), '10:00', '12:30', 'no description')
-        date_tracked_month.save(Path('./testdata/tmp'))
+        date_tracked_month.save(Path('./tests/testdata/tmp'))
 
     def test_from_date_existing(self):
         """ Test is run after the :code:`test_from_date` test. That way the :code:`tests/testdata/tmp/2020_05_May.csv`
         file already exists, thus leading to a load from file rather than a new creation for a month.
         """
         # this should load from file
-        date_tracked_month = TrackedMonth.from_date(self._ref_month, Path('./testdata/tmp'))
+        date_tracked_month = TrackedMonth.from_date(self._ref_month, Path('./tests/testdata/tmp'))
         # create a copy of the empty data frame and add the entry that should have been in the file
         copy_ref_empty = copy.deepcopy(self._ref_empty_tracked_month)
         copy_ref_empty.add_entry(date(2020, 5, 2), '10:00', '12:30', 'no description')
         try:
             self._tracked_months_equal(copy_ref_empty, date_tracked_month)
         finally:
-            Path('./testdata/tmp/2020_05_May.csv').unlink()
+            Path('./tests/testdata/tmp/2020_05_May.csv').unlink()
 
     def test_save(self):
-        out_path = Path('./testdata/tmp/2020_05_May.csv')
+        out_path = Path('./tests/testdata/tmp/2020_05_May.csv')
         self._ref_tracked_month.save(out_path.parent)
-        ref_file = open(Path('./testdata/valid_reference_month.csv'), 'rb')
+        ref_file = open(Path('./tests/testdata/valid_reference_month.csv'), 'rb')
         out_file = open(out_path, 'rb')
         try:
             self.assertEqual(ref_file.readlines(), out_file.readlines())

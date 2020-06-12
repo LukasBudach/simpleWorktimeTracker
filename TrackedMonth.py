@@ -26,13 +26,14 @@ class TrackedMonth:
         return cls(raw_data, month_tracked)
 
     @classmethod
-    def from_date(cls, date: datetime.date, target_dir=Path('./data')):
-        filepath = target_dir / '{}_{}_{}.csv'.format(date.year,
-                                                      date.strftime('%m'),
-                                                      date.strftime('%B'))
+    def from_date(cls, d: datetime.date, target_dir=Path('./data')):
+        filepath = target_dir / '{}_{}_{}.csv'.format(d.year,
+                                                      d.strftime('%m'),
+                                                      d.strftime('%B'))
         if not filepath.exists():
+            d = datetime.date(d.year, d.month, 1)
             return cls(data=pd.DataFrame(columns=['date', 'start', 'end', 'work time', 'running total', 'description']),
-                       month=date)
+                       month=d)
         else:
             return cls.from_file(filepath)
 

@@ -26,7 +26,7 @@ class TestSummary(unittest.TestCase):
                                            'total overtime': [Time.from_string('03:15'), Time.from_string('05:15'),
                                                               Time.from_string('12:05')],
                                            'hours per week': [1.75, 1.75, 7.0]})
-        cls._ref_summary = Summary(data=cls._ref_data, summary_file=Path('./testdata/valid_reference_summary.csv'))
+        cls._ref_summary = Summary(data=cls._ref_data, summary_file=Path('./tests/testdata/valid_reference_summary.csv'))
         cls._ref_summary.save()
 
     def _data_frames_equal(self, reference, other):
@@ -45,7 +45,7 @@ class TestSummary(unittest.TestCase):
             Summary.validate_header(invalid_data)
 
     def test_from_file(self):
-        read_summary = Summary.from_file(Path('./testdata/valid_reference_summary.csv'))
+        read_summary = Summary.from_file(Path('./tests/testdata/valid_reference_summary.csv'))
         self._data_frames_equal(self._ref_summary._data, read_summary._data)
 
     def test_sort(self):
@@ -74,11 +74,11 @@ class TestSummary(unittest.TestCase):
         self._data_frames_equal(self._ref_summary._data, no_rt_summary._data)
 
     def test_save(self):
-        out_path = Path('./testdata/tmp/summary.csv')
+        out_path = Path('./tests/testdata/tmp/summary.csv')
         savable_summary = copy.deepcopy(self._ref_summary)
         savable_summary._file_path = out_path
         savable_summary.save()
-        ref_file = open(Path('./testdata/valid_reference_summary.csv'), 'rb')
+        ref_file = open(Path('./tests/testdata/valid_reference_summary.csv'), 'rb')
         out_file = open(out_path, 'rb')
         try:
             self.assertEqual(ref_file.readlines(), out_file.readlines())
@@ -88,7 +88,7 @@ class TestSummary(unittest.TestCase):
             out_path.unlink()
 
     def test_update_insert_month_append_new(self):
-        month_to_insert = TrackedMonth.from_file(Path('./testdata/valid_reference_month.csv'))
+        month_to_insert = TrackedMonth.from_file(Path('./tests/testdata/valid_reference_month.csv'))
         summary_insert_copy = copy.deepcopy(self._ref_summary)
         with patch('builtins.input', return_value='7'):
             # test whether the month is actually inserted
@@ -100,7 +100,7 @@ class TestSummary(unittest.TestCase):
         self._data_frames_equal(ref_summary_inserted._data, summary_insert_copy._data)
 
     def test_update_insert_month_skip_existing(self):
-        month_to_insert = TrackedMonth.from_file(Path('./testdata/months/2020_04_April.csv'))
+        month_to_insert = TrackedMonth.from_file(Path('./tests/testdata/months/2020_04_April.csv'))
         summary_insert_copy = copy.deepcopy(self._ref_summary)
         # test whether the month is actually not inserted
         self.assertFalse(summary_insert_copy.update_insert_month(month_to_insert))
@@ -108,7 +108,7 @@ class TestSummary(unittest.TestCase):
         self._data_frames_equal(self._ref_summary._data, summary_insert_copy._data)
 
     def test_update_insert_month_update_existing(self):
-        month_to_insert = TrackedMonth.from_file(Path('./testdata/months/2020_04_April.csv'))
+        month_to_insert = TrackedMonth.from_file(Path('./tests/testdata/months/2020_04_April.csv'))
         month_to_insert.add_entry(date(2020, 4, 30), '19:00', '21:00', 'desc seven')
         summary_insert_copy = copy.deepcopy(self._ref_summary)
         # test whether the month is actually inserted
@@ -120,7 +120,7 @@ class TestSummary(unittest.TestCase):
         self._data_frames_equal(ref_summary_inserted._data, summary_insert_copy._data)
 
     def test_update_insert_month_update_existing_no_hpw(self):
-        month_to_insert = TrackedMonth.from_file(Path('./testdata/months/2020_04_April.csv'))
+        month_to_insert = TrackedMonth.from_file(Path('./tests/testdata/months/2020_04_April.csv'))
         month_to_insert.add_entry(date(2020, 4, 30), '19:00', '21:00', 'desc seven')
         summary_insert_copy = copy.deepcopy(self._ref_summary)
         # set the hours per week for the month to update to nan
@@ -138,9 +138,9 @@ class TestSummary(unittest.TestCase):
         summary_update_copy = copy.deepcopy(self._ref_summary)
         with patch('builtins.input', return_value='7'):
             # update from testdata months directory
-            summary_update_copy.update(data_dir=Path('./testdata/months'))
+            summary_update_copy.update(data_dir=Path('./tests/testdata/months'))
         ref_summary_updated = copy.deepcopy(self._ref_summary)
-        inserted_month = TrackedMonth.from_file(Path('./testdata/months/2020_05_May.csv'))
+        inserted_month = TrackedMonth.from_file(Path('./tests/testdata/months/2020_05_May.csv'))
         with patch('builtins.input', return_value='7'):
             # insert the month that should be inserted with the update function
             ref_summary_updated.update_insert_month(inserted_month)

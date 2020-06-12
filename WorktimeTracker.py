@@ -17,13 +17,13 @@ class WorktimeTracker:
         return '{}-{}-{}'.format(date_str[-4:], date_str[-7:-5], date_str[:2])
 
     @staticmethod
-    def get_date(in_date):
+    def get_date(in_date=''):
         if in_date != '':
             return date.fromisoformat(WorktimeTracker.date_to_iso(in_date))
         else:
             return date.today()
 
-    def __init__(self, multiple_dates=False, data_dir=Path('data')):
+    def __init__(self, multiple_dates=False, data_dir=Path('./data')):
         self._tracked_month = None
         self._current_date = None
         self._multiple_dates = multiple_dates

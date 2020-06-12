@@ -1,0 +1,15 @@
+[run]
+omit =
+    # ignore all possible venv directories
+    *venv*/*
+
+    # ignore all __init__.py files, as they should not include any logic anyways
+    *__init__.py
+
+[report]
+exclude_lines =
+    # effectively exclude argparse construction
+    if __name__ == '__main__'
+
+[html]
+directory = data/coverage_html

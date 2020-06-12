@@ -6,11 +6,13 @@ from datetime import date
 from pathlib import Path
 import pandas as pd
 import unittest
+from unittest.mock import patch
 
 
 class TestTrackedMonth(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        cls._ref_month = date(2020, 5, 1)
         cls._ref_data = pd.DataFrame(data={'date': [date(2020, 5, 4), date(2020, 5, 4),
                                                     date(2020, 5, 6), date(2020, 5, 10)],
                                            'start': [Time.from_string('10:00'), Time.from_string('13:00'),
@@ -22,14 +24,29 @@ class TestTrackedMonth(unittest.TestCase):
                                            'running total': [Time.from_string('02:30'), Time.from_string('06:50'),
                                                              Time.from_string('11:15'), Time.from_string('12:30')],
                                            'description': ['desc one', 'desc two', 'desc three', 'desc four']})
-        cls._ref_tracked_month = TrackedMonth(cls._ref_data, date(2020, 5, 1))
+        cls._ref_tracked_month = TrackedMonth(cls._ref_data, cls._ref_month)
+        cls._ref_empty_tracked_month = TrackedMonth(
+            data=pd.DataFrame(columns=['date', 'start', 'end', 'work time', 'running total', 'description']),
+            month=cls._ref_month
+        )
+        cls._ref_month_summary = pd.DataFrame(data={'month': [Month(cls._ref_month.month, cls._ref_month.year)],
+                                                    'time done': [Time(12, 30, False)],
+                                                    'running total': [Time(0, 0, False)],
+                                                    'time required': [Time(31, 0, False)],
+                                                    'overtime done': [Time(18, 30, True)],
+                                                    'total overtime': [Time(0, 0, False)],
+                                                    'hours per week': 7.0})
+
+    def _data_frames_equal(self, reference, other):
+        # shapes of data frames are equal
+        self.assertEqual(reference.shape, other.shape)
+        # contents of data frames are equal
+        for col in reference.columns:
+            self.assertTrue((reference[col] == other[col]).all())
 
     def _tracked_months_equal(self, reference, other):
-        # shapes of internal data are equal
-        self.assertEqual(reference._data.shape, other._data.shape)
-        # contents of internal data are equal
-        for col in reference._data.columns:
-            self.assertTrue((reference._data[col] == other._data[col]).all())
+        # data is equal
+        self._data_frames_equal(reference._data, other._data)
         # months are the same for both
         self.assertEqual(reference._month, other._month)
 
@@ -44,6 +61,27 @@ class TestTrackedMonth(unittest.TestCase):
     def test_from_file(self):
         read_tracked_month = TrackedMonth.from_file(Path('./testdata/valid_reference_month.csv'))
         self._tracked_months_equal(self._ref_tracked_month, read_tracked_month)
+
+    def test_from_date(self):
+        date_tracked_month = TrackedMonth.from_date(self._ref_month, Path('./testdata/tmp'))
+        self._tracked_months_equal(self._ref_empty_tracked_month, date_tracked_month)
+        # add a line and save for the test_from_date_existing test
+        date_tracked_month.add_entry(date(2020, 5, 2), '10:00', '12:30', 'no description')
+        date_tracked_month.save(Path('./testdata/tmp'))
+
+    def test_from_date_existing(self):
+        """ Test is run after the :code:`test_from_date` test. That way the :code:`tests/testdata/tmp/2020_05_May.csv`
+        file already exists, thus leading to a load from file rather than a new creation for a month.
+        """
+        # this should load from file
+        date_tracked_month = TrackedMonth.from_date(self._ref_month, Path('./testdata/tmp'))
+        # create a copy of the empty data frame and add the entry that should have been in the file
+        copy_ref_empty = copy.deepcopy(self._ref_empty_tracked_month)
+        copy_ref_empty.add_entry(date(2020, 5, 2), '10:00', '12:30', 'no description')
+        try:
+            self._tracked_months_equal(copy_ref_empty, date_tracked_month)
+        finally:
+            Path('./testdata/tmp/2020_05_May.csv').unlink()
 
     def test_save(self):
         out_path = Path('./testdata/tmp/2020_05_May.csv')
@@ -116,6 +154,49 @@ class TestTrackedMonth(unittest.TestCase):
         # sort and test whether the two objects are now equal
         test_tracked_month.add_entry(date(2020, 5, 4), '13:00', '17:20', 'desc two')
         self._tracked_months_equal(self._ref_tracked_month, test_tracked_month)
+
+    def test_add_overlapping_entry(self):
+        test_tracked_month = copy.deepcopy(self._ref_tracked_month)
+        # make sure that the copy and reference are equal before the adding process
+        self._tracked_months_equal(self._ref_tracked_month, test_tracked_month)
+        # attempt to add, but reject the overlapping entry
+        with patch('builtins.input', return_value='y'):
+            test_tracked_month.add_entry(date(2020, 5, 4), '12:00', '14:00', 'no desc')
+        # create a reference tracked month
+        ref_data_overlap_added = pd.DataFrame(data={'date': [date(2020, 5, 4), date(2020, 5, 6), date(2020, 5, 10)],
+                                                    'start': [Time.from_string('12:00'), Time.from_string('09:25'),
+                                                              Time.from_string('17;45')],
+                                                    'end': [Time.from_string('14:00'), Time.from_string('13:50'),
+                                                            Time.from_string('19:00')],
+                                                    'work time': [Time.from_string('02:00'), Time.from_string('04:25'),
+                                                                  Time.from_string('01:15')],
+                                                    'running total': [Time.from_string('02:00'),
+                                                                      Time.from_string('06:25'),
+                                                                      Time.from_string('07:40')],
+                                                    'description': ['no desc', 'desc three', 'desc four']})
+        ref_month_overlap_added = TrackedMonth(data=ref_data_overlap_added, month=self._ref_month)
+        self._tracked_months_equal(ref_month_overlap_added, test_tracked_month)
+
+    def test_dont_add_overlapping_entry(self):
+        test_tracked_month = copy.deepcopy(self._ref_tracked_month)
+        # make sure that the copy and reference are equal before the adding process
+        self._tracked_months_equal(self._ref_tracked_month, test_tracked_month)
+        # attempt to add, but reject the overlapping entry
+        with patch('builtins.input', return_value='n'):
+            test_tracked_month.add_entry(date(2020, 5, 4), '12:00', '14:00', 'no desc')
+        self._tracked_months_equal(self._ref_tracked_month, test_tracked_month)
+
+    def test_get_month_summary_input_hpw(self):
+        with patch('builtins.input', return_value='7'):
+            created_month_summary = self._ref_tracked_month.get_month_summary()
+            self._data_frames_equal(self._ref_month_summary, created_month_summary)
+
+    def test_get_month_summary_with_hpw(self):
+        created_month_summary = self._ref_tracked_month.get_month_summary(hours_per_week=7)
+        self._data_frames_equal(self._ref_month_summary, created_month_summary)
+
+    def test_month_accessor(self):
+        self.assertEqual(Month(self._ref_month.month, self._ref_month.year), self._ref_tracked_month.month())
 
 
 if __name__ == '__main__':

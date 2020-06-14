@@ -65,7 +65,7 @@ tracking with the ``-m`` option, you will be asked whether you want to add anoth
 are done with one date. 
 
 For clarity, this is an example of what usage of this project may look like:
-```shell script
+```text
 python TrackedMonth.py -m
 
 Date of work (dd.mm.yyyy), leave empty if today: 03.05.2020

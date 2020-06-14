@@ -12,6 +12,8 @@ When using this project, you can do the following:
 2. Select the date you want to add entries for. This defaults to the current date if simply left empty.
 3. Enter start and end times as well as a description for as many work blocks on the selected date as you want.
 
+For usage instructions see the [usage section](#Usage) below.
+
 ---
 
 In it's current form, this project will save the inserted data into multiple ``csv`` files. There will be a file called
@@ -46,4 +48,47 @@ An example for the first two entries of a summary file would be (with spaces add
 ```text
 March 2020, 154:30, 154:30, 155:00, -00:30, -00:30, 35.0
 April 2020, 182:20, 332:50, 180:00, 02:20, 01:50, 42.0
+```
+
+## Usage
+As the project is currently quite small, there aren't too many usage options. Invoke the tracking by calling:
+```shell script
+python TrackedMonth.py
+```
+If you want to add entries for multiple different dates, add the flag ``-m``.
+
+After starting the tracking process, you will be prompted to enter a date for the entries. This currently needs to be in
+the format ``dd.mm.yyyy``. Afterwards, you can add the start and end times for a work block in the format ``hh:mm`` or 
+``h:mm``. For simplicity, seconds are not supported at this time. You can also add a description for the work block.
+After having done this, you will be asked whether you want to add another entry for the same date. If you ran the 
+tracking with the ``-m`` option, you will be asked whether you want to add another entry for a different date after you
+are done with one date. 
+
+For clarity, this is an example of what usage of this project may look like:
+```shell script
+python TrackedMonth.py -m
+
+Date of work (dd.mm.yyyy), leave empty if today: 03.05.2020
+Start time (hh:mm): 8:30
+End time (hh:mm): 12:30
+Work description: Work block one
+Add another entry for the same date? (y/n) y
+
+Start time (hh:mm): 13:30
+End time (hh:mm): 17:30
+Work description: Work block two
+Add another entry for the same date? (y/n) n
+Do you want to want to add entries for another date? (y/n) y
+
+Date of work (dd.mm.yyyy), leave empty if today: 04.05.2020
+Start time (hh:mm): 8:30
+End time (hh:mm): 12:30
+Work description: Work block one, Day two
+Add another entry for the same date? (y/n) y
+
+Start time (hh:mm): 13:30
+End time (hh:mm): 17:30
+Work description: Work block two, Day two
+Add another entry for the same date? (y/n) n
+Do you want to want to add entries for another date? (y/n) n
 ```

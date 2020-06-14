@@ -1,6 +1,8 @@
 from Summary import Summary
 from TrackedMonth import TrackedMonth
 
+from utils import binary_question_input, date_input, time_input
+
 import argparse
 
 from datetime import date
@@ -10,18 +12,7 @@ from pathlib import Path
 class WorktimeTracker:
     @staticmethod
     def stay_at_date():
-        return input('Add another entry for the same date? (y/n) ') == 'y'
-
-    @staticmethod
-    def date_to_iso(date_str):
-        return '{}-{}-{}'.format(date_str[-4:], date_str[-7:-5], date_str[:2])
-
-    @staticmethod
-    def get_date(in_date=''):
-        if in_date != '':
-            return date.fromisoformat(WorktimeTracker.date_to_iso(in_date))
-        else:
-            return date.today()
+        return binary_question_input('Add another entry for the same date? (y/n) ')
 
     def __init__(self, multiple_dates=False, data_dir=Path('./data')):
         self._tracked_month = None
@@ -34,7 +25,7 @@ class WorktimeTracker:
             self.add_entries_for_one_date()
             next_date = False
             if self._multiple_dates:
-                next_date = input('Do you want to want to add entries for another date? (y/n) ') == 'y'
+                next_date = binary_question_input('Do you want to want to add entries for another date? (y/n) ')
             if not next_date:
                 break
 
@@ -48,21 +39,20 @@ class WorktimeTracker:
             add_entry = self.stay_at_date()
 
     def get_new_date(self):
-        date_in = input('Date of work (dd.mm.yyyy), leave empty if today: ')
-        new_date = WorktimeTracker.get_date(date_in)
+        new_date = date_input('Date of work (dd.mm.yyyy), leave empty if today: ', empty_for_today=True)
         if (self._current_date is not None) \
                 and ((new_date.month != self._current_date.month) or (new_date.year != self._current_date.year)):
             self._tracked_month.save()
             self._tracked_month = None
-        self._current_date = WorktimeTracker.get_date(date_in)
+        self._current_date = new_date
 
     def get_tracked_month(self):
         if self._tracked_month is None:
             self._tracked_month = TrackedMonth.from_date(self._current_date, target_dir=self._data_dir)
 
     def add_entry_for_date(self):
-        start_in = input('Start time (hh:mm): ')
-        end_in = input('End time (hh:mm): ')
+        start_in = time_input('Start time (hh:mm): ')
+        end_in = time_input('End time (hh:mm): ')
         description = input('Work description: ')
 
         self._tracked_month.add_entry(self._current_date, start_in, end_in, description)

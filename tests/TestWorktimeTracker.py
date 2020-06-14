@@ -27,16 +27,6 @@ class TestWorktimeTracker(unittest.TestCase):
         with patch('builtins.input', return_value='n'):
             self.assertFalse(WorktimeTracker.stay_at_date())
 
-    def test_date_to_iso(self):
-        self.assertEqual('2020-05-03', WorktimeTracker.date_to_iso('03.05.2020'))
-        self.assertEqual('2020-05-03', WorktimeTracker.date_to_iso('03/05/2020'))
-
-    def test_get_date_no_input(self):
-        self.assertEqual(date.today(), WorktimeTracker.get_date())
-
-    def test_get_date_input(self):
-        self.assertEqual(date(2020, 5, 3), WorktimeTracker.get_date('03.05.2020'))
-
     def test_get_new_date_from_empty(self):
         with patch('builtins.input', return_value='03.05.2020'):
             self._tracker.get_new_date()

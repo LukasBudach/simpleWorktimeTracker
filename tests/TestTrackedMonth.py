@@ -66,7 +66,8 @@ class TestTrackedMonth(unittest.TestCase):
         date_tracked_month = TrackedMonth.from_date(self._ref_month, Path('./tests/testdata/tmp'))
         self._tracked_months_equal(self._ref_empty_tracked_month, date_tracked_month)
         # add a line and save for the test_from_date_existing test
-        date_tracked_month.add_entry(date(2020, 5, 2), '10:00', '12:30', 'no description')
+        date_tracked_month.add_entry(date(2020, 5, 2), Time.from_string('10:00'), Time.from_string('12:30'),
+                                     'no description')
         date_tracked_month.save(Path('./tests/testdata/tmp'))
 
     def test_from_date_existing(self):
@@ -77,7 +78,8 @@ class TestTrackedMonth(unittest.TestCase):
         date_tracked_month = TrackedMonth.from_date(self._ref_month, Path('./tests/testdata/tmp'))
         # create a copy of the empty data frame and add the entry that should have been in the file
         copy_ref_empty = copy.deepcopy(self._ref_empty_tracked_month)
-        copy_ref_empty.add_entry(date(2020, 5, 2), '10:00', '12:30', 'no description')
+        copy_ref_empty.add_entry(date(2020, 5, 2), Time.from_string('10:00'), Time.from_string('12:30'),
+                                 'no description')
         try:
             self._tracked_months_equal(copy_ref_empty, date_tracked_month)
         finally:
@@ -152,7 +154,7 @@ class TestTrackedMonth(unittest.TestCase):
         with self.assertRaises(AssertionError):
             self._tracked_months_equal(self._ref_tracked_month, test_tracked_month)
         # sort and test whether the two objects are now equal
-        test_tracked_month.add_entry(date(2020, 5, 4), '13:00', '17:20', 'desc two')
+        test_tracked_month.add_entry(date(2020, 5, 4), Time.from_string('13:00'), Time.from_string('17:20'), 'desc two')
         self._tracked_months_equal(self._ref_tracked_month, test_tracked_month)
 
     def test_add_overlapping_entry(self):
@@ -161,7 +163,8 @@ class TestTrackedMonth(unittest.TestCase):
         self._tracked_months_equal(self._ref_tracked_month, test_tracked_month)
         # attempt to add, but reject the overlapping entry
         with patch('builtins.input', return_value='y'):
-            test_tracked_month.add_entry(date(2020, 5, 4), '12:00', '14:00', 'no desc')
+            test_tracked_month.add_entry(date(2020, 5, 4), Time.from_string('12:00'), Time.from_string('14:00'),
+                                         'no desc')
         # create a reference tracked month
         ref_data_overlap_added = pd.DataFrame(data={'date': [date(2020, 5, 4), date(2020, 5, 6), date(2020, 5, 10)],
                                                     'start': [Time.from_string('12:00'), Time.from_string('09:25'),
@@ -183,7 +186,8 @@ class TestTrackedMonth(unittest.TestCase):
         self._tracked_months_equal(self._ref_tracked_month, test_tracked_month)
         # attempt to add, but reject the overlapping entry
         with patch('builtins.input', return_value='n'):
-            test_tracked_month.add_entry(date(2020, 5, 4), '12:00', '14:00', 'no desc')
+            test_tracked_month.add_entry(date(2020, 5, 4), Time.from_string('12:00'), Time.from_string('14:00'),
+                                         'no desc')
         self._tracked_months_equal(self._ref_tracked_month, test_tracked_month)
 
     def test_get_month_summary_input_hpw(self):

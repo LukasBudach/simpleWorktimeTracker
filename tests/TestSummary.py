@@ -109,7 +109,7 @@ class TestSummary(unittest.TestCase):
 
     def test_update_insert_month_update_existing(self):
         month_to_insert = TrackedMonth.from_file(Path('./tests/testdata/months/2020_04_April.csv'))
-        month_to_insert.add_entry(date(2020, 4, 30), '19:00', '21:00', 'desc seven')
+        month_to_insert.add_entry(date(2020, 4, 30), Time.from_string('19:00'), Time.from_string('21:00'), 'desc seven')
         summary_insert_copy = copy.deepcopy(self._ref_summary)
         # test whether the month is actually inserted
         self.assertTrue(summary_insert_copy.update_insert_month(month_to_insert))
@@ -121,7 +121,7 @@ class TestSummary(unittest.TestCase):
 
     def test_update_insert_month_update_existing_no_hpw(self):
         month_to_insert = TrackedMonth.from_file(Path('./tests/testdata/months/2020_04_April.csv'))
-        month_to_insert.add_entry(date(2020, 4, 30), '19:00', '21:00', 'desc seven')
+        month_to_insert.add_entry(date(2020, 4, 30), Time.from_string('19:00'), Time.from_string('21:00'), 'desc seven')
         summary_insert_copy = copy.deepcopy(self._ref_summary)
         # set the hours per week for the month to update to nan
         summary_insert_copy._data.at[2, 'hours per week'] = np.nan

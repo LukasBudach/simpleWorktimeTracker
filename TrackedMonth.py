@@ -1,5 +1,7 @@
 from datastructures import *
 
+from utils import binary_question_input
+
 from calendar import monthrange
 import datetime
 import numpy as np
@@ -62,24 +64,21 @@ class TrackedMonth:
         output_df['date'] = output_df['date'].apply(lambda d: d.strftime('%d.%m.%Y'))
         output_df.to_csv(filepath, sep=',', index=False)
 
-    def add_entry(self, date: datetime.date, start: str, end: str, description: str):
-        start_time = Time.from_string(start)
-        end_time = Time.from_string(end)
-        found_overlap, overlapping_entries = self.overlapping_entry_exists(date, start_time, end_time)
+    def add_entry(self, date: datetime.date, start: Time, end: Time, description: str):
+        found_overlap, overlapping_entries = self.overlapping_entry_exists(date, start, end)
         if found_overlap:
             print('The work time entry {} starting {} and ending {} overlaps with the following entries:'
-                  .format(date.strftime('%d.%m.%Y'), start, end))
+                  .format(date.strftime('%d.%m.%Y'), start.as_string(), end.as_string()))
             overlap = self._data[overlapping_entries]
             for el in overlap.iterrows():
                 print('{} start {} end {}'.format(el[1]['date'].strftime('%d.%m.%Y'), el[1]['start'], el[1]['end']))
-            overwrite_entry = input('Do you want to overwrite all of these entries? (y/n) ')
-            if overwrite_entry == 'y':
+            if binary_question_input('Do you want to overwrite all of these entries? (y/n) '):
                 self._data = self._data[overlapping_entries.apply(lambda b: not b)]
             else:
                 return
 
         new_entry = pd.DataFrame(columns=['date', 'start', 'end', 'work time', 'running total', 'description'])
-        new_entry.loc[0] = [date, start_time, end_time, end_time - start_time, Time(0, 0, False), description]
+        new_entry.loc[0] = [date, start, end, end - start, Time(0, 0, False), description]
         self._data = self._data.append(new_entry)
         self.sort()
         self.recalculate_running_total()

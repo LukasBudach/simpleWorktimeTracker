@@ -44,9 +44,9 @@ class Summary:
         total_overtime = Time(0, 0, False)
         for el in self._data.iterrows():
             running_total = running_total + el[1]['time done']
-            self._data['running total'][el[0]] = running_total
+            self._data.at[el[0], 'running total'] = running_total
             total_overtime = total_overtime + el[1]['overtime done']
-            self._data['total overtime'][el[0]] = total_overtime
+            self._data.at[el[0], 'total overtime'] = total_overtime
 
     def update(self, data_dir=Path('./data'), file_pattern='*_*_*.csv'):
         month_files = glob.glob(str(data_dir / file_pattern))

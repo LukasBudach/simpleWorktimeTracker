@@ -8,7 +8,9 @@ omit =
 
 [report]
 exclude_lines =
-    # effectively exclude argparse construction
+    # pragmas allowing exclusion of lines and functions in-code
+    pragma: no cover
+    # the script execution function is mainly argparse, all logic should be put into different functions
     if __name__ == '__main__'
 
 [html]

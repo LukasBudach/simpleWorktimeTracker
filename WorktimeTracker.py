@@ -20,7 +20,8 @@ class WorktimeTracker:
         self._multiple_dates = multiple_dates
         self._data_dir = data_dir
 
-    def add_entries(self):
+    # can't test, as the self.add_entry_for_one_date() function requires multiple different inputs
+    def add_entries(self):  # pragma: no cover
         while True:
             self.add_entries_for_one_date()
             next_date = False
@@ -29,7 +30,8 @@ class WorktimeTracker:
             if not next_date:
                 break
 
-    def add_entries_for_one_date(self):
+    # can't test, as the self.add_entry_for_date() function requires multiple different inputs
+    def add_entries_for_one_date(self):  # pragma: no cover
         self.get_new_date()
         self.get_tracked_month()
 
@@ -50,7 +52,8 @@ class WorktimeTracker:
         if self._tracked_month is None:
             self._tracked_month = TrackedMonth.from_date(self._current_date, target_dir=self._data_dir)
 
-    def add_entry_for_date(self):
+    # can't cover in tests due to multiple different inputs being needed
+    def add_entry_for_date(self):  # pragma: no cover
         start_in = time_input('Start time (hh:mm): ')
         end_in = time_input('End time (hh:mm): ')
         description = input('Work description: ')
@@ -64,7 +67,8 @@ class WorktimeTracker:
         summ.save()
 
 
-def main(arguments):
+# can't cover in tests due to multiple different inputs being needed by the WorktimeTracker.add_entries() function
+def main(arguments):  # pragma: no cover
     tracker = WorktimeTracker(multiple_dates=arguments.multiple_entries)
     tracker.add_entries()
     tracker.close()

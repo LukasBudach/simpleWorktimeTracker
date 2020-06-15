@@ -4,12 +4,12 @@ from datetime import date
 import re
 
 
-def last_char_space(in_str: str):
+def is_last_char_space(in_str: str):
     return in_str[len(in_str) - 1] == ' '
 
 
 def make_last_char_space(in_str: str):
-    return in_str if last_char_space(in_str) else in_str + ' '
+    return in_str if is_last_char_space(in_str) else in_str + ' '
 
 
 def format_binary_question(question: str):
@@ -41,7 +41,7 @@ def format_time_input(request: str):
 def time_input(request: str):
     input_invalid = True
     response = ''
-    valid_time_regex = re.compile('[0-9]{1,2}:[0-9]{2}')
+    valid_time_regex = re.compile('-?[0-9]{1,2}:[0-9]{2}')
     while input_invalid:
         response = input(format_time_input(request))
         input_invalid = not valid_time_regex.match(response)

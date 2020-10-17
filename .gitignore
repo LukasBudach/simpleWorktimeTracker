@@ -6,4 +6,6 @@ venv*/
 data/
 data_backup/
 
+auth/
+
 .coverage

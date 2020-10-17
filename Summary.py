@@ -86,3 +86,19 @@ class Summary:
 
     def save(self):
         self._data.to_csv(self._file_path, sep=',', index=False)
+
+    def get_month(self, month: Month):
+        mask = self._data['month'] == month
+        if mask.any():
+            return self._data[mask].iloc[0]
+        else:
+            return None
+
+    def get_latest_month(self):
+        return self._data.iloc[len(self._data) - 1]
+
+    def get_min_year(self):
+        return min(self._data['month']).year()
+
+    def get_max_year(self):
+        return max(self._data['month']).year()

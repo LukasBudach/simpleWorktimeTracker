@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>WortimeTrackerGUI_v2</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body id="body" style="overflow-y: hidden;background-color: #3e0000;">
+    <div class="container-fluid" style="margin-right: 0;margin-left: 0;height: 77.77vh;padding-right: 0px;">
+        <div class="row" id="header" style="width: 100%;background: #3e0000;color: rgb(255,255,255);padding-top: 1vh;padding-bottom: 1vh;margin-right: -50px;padding-right: 50px;">
+            <div class="col">
+                <h1>Select a Dataset:</h1>
+                <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">PCNN/PCR</button>
+                    <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
+                </div>
+            </div>
+            <div class="col">
+                <h1>Total Time Done:</h1>
+                <h1 id="total-time-done" style="text-align: right;"></h1>
+            </div>
+            <div class="col">
+                <h1>Total Time Required:</h1>
+                <h1 id="total-time-required" style="text-align: right;"></h1>
+            </div>
+            <div class="col">
+                <h1>Total Overtime:</h1>
+                <h1 id="total-overtime" style="text-align: right;"></h1>
+            </div>
+        </div>
+        <div class="row no-gutters" style="height: 100%;background-color: white;margin-left: -15px;padding-left: 15px;">
+            <div class="col" style="padding-top: 1vh;max-width: 18.75%;">
+                <h1>Select a year:</h1>
+                <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" id="year-select-dropdown" type="button">Year to show</button>
+                    <div class="dropdown-menu" id="year-select-menu"></div>
+                </div>
+                <hr>
+                <h1>Add an entry:</h1>
+                <form>
+                    <div class="form-group"><label>Date:</label><input class="form-control" type="date"></div>
+                    <div class="form-group"><label>Starting Time:</label><input class="form-control" type="time"></div>
+                    <div class="form-group"><label>Finish Time:</label><input class="form-control" type="time"></div>
+                </form>
+            </div>
+            <div class="col" id="content" style="padding-top: 5.55vh;padding-right: 3.125vw;padding-bottom: 5.55vh;padding-left: 3.125vw;overflow-y: auto;height: 100%;">
+                <div class="card-columns" id="month-cards" style="overflow-x: hidden;/*padding-right: 2em;*/"></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script> const socket = io(); </script>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/actions/card_actions.js"></script>
+    <script src="assets/js/actions/header_actions.js"></script>
+    <script src="assets/js/actions/responsiveness.js"></script>
+    <script src="assets/js/actions/sidebar_actions.js"></script>
+    <script src="assets/js/eventListeners.js"></script>
+    <script src="assets/js/helpers/card_building.js"></script>
+    <script src="assets/js/helpers/general_utils.js"></script>
+    <script src="assets/js/helpers/globals.js"></script>
+    <script src="assets/js/sockets.js"></script>
+    <script src="assets/js/z_debugging.js"></script>
+</body>
+
+</html>

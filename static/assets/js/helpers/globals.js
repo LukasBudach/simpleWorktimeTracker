@@ -1,0 +1,1 @@
+last_window_size_category = -1

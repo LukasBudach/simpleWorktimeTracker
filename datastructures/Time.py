@@ -1,4 +1,6 @@
 from math import floor
+import datetime
+
 
 class Time:
     @classmethod
@@ -85,3 +87,6 @@ class Time:
 
     def as_string(self):
         return '{}{:02d}:{:02d}'.format('-' if self._is_negative else '', self._hours, self._minutes)
+
+    def as_datetime(self, date: datetime.date):
+        return datetime.datetime(date.year, date.month, date.day, self._hours, self._minutes)

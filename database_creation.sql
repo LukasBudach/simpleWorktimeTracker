@@ -1,0 +1,2 @@
+CREATE DATABASE worktime
+    ENCODING='UTF-8';

@@ -1,2 +1,6 @@
 numpy
 pandas
+flask
+flask-socketio
+eventlet
+psycopg2
